@@ -425,6 +425,11 @@ public class LinkedFileViewModel extends AbstractViewModel {
             }
 
             URLDownload urlDownload = new URLDownload(linkedFile.getLink());
+            try {
+                if (urlDownload.asString().substring(0, urlDownload.asString().indexOf("\n")).equals("<!DOCTYPE html>")) {
+                    dialogService.showErrorDialogAndWait(Localization.lang("You do not have access to this document"));
+                }
+            } catch (IOException e){e.printStackTrace();}
             BackgroundTask<Path> downloadTask = prepareDownloadTask(targetDirectory.get(), urlDownload);
             downloadTask.onSuccess(destination -> {
                 LinkedFile newLinkedFile = LinkedFilesEditorViewModel.fromFile(destination, databaseContext.getFileDirectories(filePreferences), externalFileTypes);
